@@ -8,6 +8,7 @@ export function useFetchGames({page, genres}) {
     const pagesParameter = page ? "&page=" + page : "";
     useEffect(() => {
         const abortController = new AbortController();
+        setLoading(true);
         fetch("https://api.rawg.io/api/games?key=" + key + genresParameter + pagesParameter, { mode: "cors", signal: abortController.signal})
         .then(response => response.json())
         .then(response => {
