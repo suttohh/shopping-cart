@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback} from "react";
+import { useRef, useCallback} from "react";
 import {useFetchGames} from '../games-api/GamesAPI.jsx';
 import './GamesList.css';
 import windowsIcon from '../../assets/icons/Windows_logo.svg';
@@ -7,20 +7,17 @@ import playstationIcon from '../../assets/icons/PlayStation_logo_white.svg';
 import plusIcon from '../../assets/icons/plus.svg';
 import plusIconInverted from '../../assets/icons/plus_inverted.svg';
 
-export function GamesList({cartItems, cartItemHandler}) {
-    const [pageNumber, setPageNumber] = useState(1);
-    const {games, loading} = useFetchGames({page: pageNumber});
-    const setPageNumberHandler = () => {
-        setPageNumber(prevNumber => prevNumber + 1);
-    }
-    console.log(games);
+export function GamesList({cartItems, cartItemHandler, pageNumber, platformFilters, genreFilters, setPageNumberHandler, submittedSearchTerm}) {
+    const platformIds = platformFilters.map(platformFilter => platformFilter.filterId);
+    const genreIds = genreFilters.map(genreFilter => genreFilter.filterId);
+    const {games, loading, hasMore} = useFetchGames({page: pageNumber, platformIds: platformIds, genreIds: genreIds, search: submittedSearchTerm});
+    console.log(hasMore);
     const observer = useRef();
     const lastCardElementRef = useCallback(node => {
         if(loading) return;
         if(observer.current) observer.current.disconnect();
         observer.current = new IntersectionObserver(entries => {
-            if(entries[0].isIntersecting) {
-                console.log("Intersecting!");
+            if(entries[0].isIntersecting && hasMore) {
                 setPageNumberHandler();
             }
         })
@@ -28,12 +25,12 @@ export function GamesList({cartItems, cartItemHandler}) {
     }, [loading]);
     return (
         <>
-            {games && <GameCardList games={games} lastCardElementRef={lastCardElementRef} loading={loading} cartItems={cartItems} cartItemHandler={cartItemHandler}/>}
+            {<GameCardList games={games} lastCardElementRef={lastCardElementRef} loading={loading} cartItems={cartItems} cartItemHandler={cartItemHandler} pageNumber={pageNumber} hasMore={hasMore}/>}
         </>
     )
 }
 
-function GameCardList({games, lastCardElementRef, loading, cartItems, cartItemHandler}) {
+function GameCardList({games, lastCardElementRef, loading, cartItems, cartItemHandler, pageNumber, hasMore}) {
     const gameCards = games.map((game, index) => {
             const parentPlatforms = game.parent_platforms;
             const icons = parentPlatforms?.map(parentPlatform => {
@@ -51,12 +48,13 @@ function GameCardList({games, lastCardElementRef, loading, cartItems, cartItemHa
         }
     );
     return (
-        <>
-        <div className="game-card-list">
-            {gameCards}
+        <div>
+            <div className="game-card-list">
+                {(!loading || pageNumber > 1) && gameCards}
+            </div>
             {loading && <Loading/>}
+            {!loading && !hasMore && <EndOfList/>}
         </div>
-        </>
     );
 }
 
@@ -72,14 +70,15 @@ export function GameCard({title, backgroundImage, icons, lastCardElementRef, but
                     {icons.map((icon, index) => icon && <img key={index} className="platform-icon" src={icon}/>)}
                 </div>
                 <span className="game-card-title">{title}</span>
-                <span style={{margin: "0 auto", fontSize: "1.5rem"}}>$30</span>
+                <span style={{margin: "0 auto", fontSize: "1.5rem", color: "#9A9A9A"}}>$30</span>
             </div>
         </div>
     );
 }
 
 function AddToCartButton({game, cartItems, cartItemHandler}) {
-    let addedToCart = cartItems.includes(game);
+    let cartIds = cartItems.map(cartItem => cartItem.id);
+    let addedToCart = cartIds.includes(game.id);
     let source = addedToCart ? plusIconInverted : plusIcon;
     return(
         <button className="add-to-cart-button" onClick={() => {
@@ -96,6 +95,10 @@ function AddToCartButton({game, cartItems, cartItemHandler}) {
 
 function Loading() {
     return <span className="material-symbols-outlined loading-icon">progress_activity</span>;
+}
+
+function EndOfList() {
+    return (<span className="end-of-page-text">{"No more records found"}</span>);
 }
 
 export default GamesList;

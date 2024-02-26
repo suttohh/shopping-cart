@@ -1,18 +1,29 @@
 import { useEffect, useState } from "react";
 
-export function useFetchGames({page, genres}) {
+export function useFetchGames({page, genreIds = [], platformIds = [], search, reset}) {
     const [games, setGames] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [hasMore, setHasMore] = useState(true);
     const key = "5ffa67b24d57450bac3d502bf1583204";
-    const genresParameter = genres ? "?genres=" + genres : "";
+    const genresParameter = genreIds.length > 0 ? "&genres=" + genreIds : "";
     const pagesParameter = page ? "&page=" + page : "";
+    const platformsParameter = platformIds.length > 0 ? "&parent_platforms=" + platformIds : "";
+    const searchParameter = search ? "&search=" + search : "";
+    const query = "https://api.rawg.io/api/games?key=" + key + genresParameter + platformsParameter + pagesParameter + searchParameter + "&search_exact=1";
+    console.log(query);
     useEffect(() => {
         const abortController = new AbortController();
         setLoading(true);
-        fetch("https://api.rawg.io/api/games?key=" + key + genresParameter + pagesParameter, { mode: "cors", signal: abortController.signal})
+        fetch(query, { mode: "cors", signal: abortController.signal})
         .then(response => response.json())
         .then(response => {
-            setGames(previousGames => [...previousGames, ...response.results]);
+            if(page == 1 || reset) {
+                setGames(response.results);
+            }
+            else {
+                setGames(previousGames => [...previousGames, ...response.results]);
+            }
+            setHasMore(response.next != null);
             setLoading(false);
         })
         .catch(err => {
@@ -21,8 +32,8 @@ export function useFetchGames({page, genres}) {
         return () => {
             abortController.abort();
         }
-    }, [genresParameter, pagesParameter]);
-    return {games, loading};
+    }, [page, query]);
+    return {games, loading, hasMore};
 }
 
 export default useFetchGames;

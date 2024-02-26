@@ -1,0 +1,133 @@
+.nav-bar {
+    display: none;
+    position: fixed;
+    display: flex;
+    justify-content: space-between;
+    top: 0;
+    padding: 5px;
+    width: 100%;
+    z-index: 100;
+    background-color: black;
+}
+
+.navbar-site-details {
+    display: flex;
+    align-items: center;
+}
+
+.site-icon {
+    font-size: 3rem;
+}
+
+.site-title {
+    font-size: 2rem;
+}
+
+.navbar-form {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    margin: auto;
+}
+
+.navbar-form > * {
+    border-top: 1px;
+    border-bottom: 1px;
+}
+
+.navbar-search-input {
+    font-size: 1.4rem;
+    padding: 5px;
+    border-radius: 10px 0px 0px 10px;
+    border-right: 0px;
+    outline: 0px;
+    height: 30px;
+    width: 300px;
+    transition: width .25s;
+}
+
+.search-submit-button {
+    display: flex;
+    align-items: center;
+    border-radius: 0px 10px 10px 0px;
+    border-left: none;
+    border-right: none;
+    background: white;
+    cursor: pointer;
+}
+
+.navbar-search-input:focus,
+.navbar-search-input:active,
+.navbar-search-input:has(+ .search-submit-button:focus),
+.navbar-search-input:has(+ .search-submit-button:active){
+    width: 500px;
+}
+
+.navbar-search-input:focus ~ .game-suggestion-container,
+.navbar-search-input:active ~ .game-suggestion-container {
+    visibility: visible;
+    width: 525px;
+}
+
+.search-icon {
+    font-size: 1.2rem;
+}
+
+.game-suggestion-container {
+    position: absolute;
+    visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    color: black;
+    gap: 10px;
+    border-radius: 10px;
+    background-color: white;
+    bottom: -10px;
+    padding: 10px;
+    max-height: 400px;
+    overflow: auto;
+    transform: translateY(100%);
+    width: 325px;
+    transition: width .25s;
+}
+
+.game-suggestion {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.game-suggestion-image {
+    width: 130px;
+    aspect-ratio: 16 / 9;
+    border-radius: 10px;
+}
+
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .game-suggestion-container::-webkit-scrollbar {
+        display: none;
+      }
+      
+      /* Hide scrollbar for IE, Edge and Firefox */
+      .game-suggestion-container {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+      }
+
+.shopping-cart-icon-container {
+    display: flex;
+    margin-right: 10px;
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+  }
+
+  .shopping-cart-icon {
+    font-size: 3rem;
+  }
+
+  .shopping-cart-total-items {
+    font-size: 1rem;
+    margin-top: auto;
+  }

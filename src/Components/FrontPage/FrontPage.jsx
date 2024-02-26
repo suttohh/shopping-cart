@@ -1,20 +1,51 @@
 import {useState, useRef, useEffect} from "react";
 import {GamesList} from '../GamesList/GamesList.jsx';
 import './FrontPage.css';
-import windowsIcon from '../../assets/icons/Windows_logo.svg';
-import xboxIcon from '../../assets/icons/Xbox_logo.svg';
-import playstationIcon from '../../assets/icons/PlayStation_logo_white.svg';
+import {SidebarFilters} from '../SidebarFilters/SidebarFilters.jsx';
+import {NavBar} from '../NavBar/NavBar.jsx';
 
 export function FrontPage() {
+    const [pageNumber, setPageNumber] = useState(1);
+    const setPageNumberHandler = () => {
+        setPageNumber(prevNumber => prevNumber + 1);
+    }
+    const [searchTerm, setSearchTerm] = useState("");
+    const searchTermHandler = (searchTerm) => {
+        setSearchTerm(searchTerm);
+    }
+    const [submittedSearchTerm, setSubmittedSearchTerm] = useState("");
+    const submittedSearchTermHandler = (searchTerm) => {
+        setSubmittedSearchTerm(searchTerm);
+        setPageNumber(1);
+    }
     const [cartItems, setCartItems] = useState([]);
     const [cartVisible, setCartVisible] = useState(false);
-    console.log(cartVisible);
+    const [activePlatformFilters, setActivePlatformFilters] = useState([]);
+    const [activeGenreFilters, setActiveGenreFilters] = useState([]);
+    const activePlatformFiltersHandler = (filter, action) => {
+        if(action == "ADD") setActivePlatformFilters(previousFilters => [...previousFilters, filter]);
+        else if(action == "REMOVE") setActivePlatformFilters(previousFilters => {
+            return previousFilters.filter(prevFilter => {
+                return prevFilter != filter;
+            })
+        });
+        setPageNumber(1);
+    }
+    const activeGenreFiltersHandler = (filter, action) => {
+        if(action == "ADD") setActiveGenreFilters(previousFilters => [...previousFilters, filter]);
+        else if(action == "REMOVE") setActiveGenreFilters(previousFilters => {
+            return previousFilters.filter(prevFilter => {
+                return prevFilter != filter;
+            })
+        });
+        setPageNumber(1);
+    }
     const cartItemHandler = (item, action) => {
         if(action == "ADD") setCartItems(previousItems => [...previousItems, item]);
-        if(action == "REMOVE") setCartItems(previousItems => {
-            console.log("triggered");
+        else if(action == "REMOVE") setCartItems(previousItems => {
             return previousItems.filter(prevItem => {
-                return prevItem != item;
+                return prevItem.id != item.id;
+
             });
         })
     }
@@ -26,55 +57,32 @@ export function FrontPage() {
     return (
         <>
             {cartVisible && <div className="disable-div"/>}
-            <NavBar cartTotal={cartItems.length} cartVisibleHandler={cartVisibleHandler}/>
+            <NavBar cartTotal={cartItems.length} cartVisibleHandler={cartVisibleHandler} searchTerm={searchTerm} searchTermHandler={searchTermHandler} submittedSearchTermHandler={submittedSearchTermHandler}/>
             <CartContents cartItems={cartItems} cartItemHandler={cartItemHandler} cartVisible={cartVisible} wrapperRef={wrapperRef}/>
             <div className="site-container">
-                <SideBar/>
+                <SidebarFilters 
+                    platformFilterHandler={activePlatformFiltersHandler} 
+                    genreFiltersHandler={activeGenreFiltersHandler}
+                />
                 <ContextHeading/>
-                <GamesList cartItems={cartItems} cartItemHandler={cartItemHandler}/>
+                <GamesList 
+                    cartItems={cartItems} 
+                    cartItemHandler={cartItemHandler} 
+                    pageNumber={pageNumber} 
+                    setPageNumberHandler={setPageNumberHandler} 
+                    platformFilters={activePlatformFilters} 
+                    genreFilters={activeGenreFilters} 
+                    submittedSearchTerm={submittedSearchTerm}
+                />
             </div>
         </>
-    );
-}
-
-function SideBar() {
-    return (
-        <div className="sidebar">
-            <div className="sidebar-section">
-                <span className="sidebar-section-title">Platforms</span>
-                <button className="sidebar-button">
-                    <img className="platform-icon" src={windowsIcon}/>
-                    <span>PC</span>
-                </button>
-                <button className="sidebar-button">
-                    <img className="platform-icon" src={xboxIcon}/>
-                    <span>Xbox</span>
-                </button>
-                <button className="sidebar-button">
-                    <img className="platform-icon" src={playstationIcon}/>
-                    <span>Playstation</span>
-                </button>
-            </div>
-        </div>
     );
 }
 
 function ContextHeading() {
     return(
         <div className="context-heading">
-            <h1>Filter</h1>
-        </div>
-    );
-}
-
-function NavBar({cartTotal, cartVisibleHandler}) {
-    return(
-        <div className="nav-bar">
-            <img className="site-icon" src={xboxIcon}/>
-            <button className="shopping-cart-icon-container" onClick={cartVisibleHandler}>
-                <span className="material-symbols-outlined shopping-cart-icon">shopping_cart</span>
-                <span className="shopping-cart-total-items">{cartTotal}</span>
-            </button>
+            <h1>Games</h1>
         </div>
     );
 }
@@ -101,7 +109,7 @@ function CartCard({title, image, button}) {
             <div className="cart-card-details">
                 {button}
                 <span className="cart-card-title">{title}</span>
-                <span>$30</span>
+                <span className="cart-card-price">$30</span>
             </div>
         </div>
     );

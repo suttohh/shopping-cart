@@ -1,79 +1,12 @@
-.nav-bar {
-    display: none;
-    position: fixed;
-    display: flex;
-    justify-content: space-between;
-    top: 0;
-    padding: 5px;
-    width: 100%;
-    z-index: 100;
-    background-color: black;
-}
-
-.site-icon {
-    width: 50px;
-}
-
 .site-container {
     display: grid;
-    grid-template-columns: 1fr 85dvw;
-    gap: 2dvw;
-  }
-  
-  .sidebar {
-    display: flex;
-    padding: 50px 15px 15px 15px;
-    flex-direction: column;
-    grid-row: 1/3;
-    margin: 0;
-    top: 0;
-    align-self: start;
-    position: sticky;
-  }
-  
-  .sidebar-section {
-    display: flex;
-    flex-direction: column;
-    margin: 5px;
-  }
-  
-  .sidebar-section-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-  }
-  
-  .sidebar-button {
-    display: flex;
-    gap: 5px;
-    align-items: center;
-    color: white;
-    background: none;
-    outline: none;
-    border: none;
-    text-align: left;
-    font-size: 1.5rem;
+    grid-template-columns: 250px 85dvw;
+    grid-auto-rows: 150px min-content;
+    gap: 1dvw;
   }
 
   .context-heading {
     padding-top: 50px;
-  }
-
-  .shopping-cart-icon-container {
-    display: flex;
-    margin-right: 10px;
-    background: transparent;
-    border: none;
-    color: white;
-    cursor: pointer;
-  }
-
-  .shopping-cart-icon {
-    font-size: 3rem;
-  }
-
-  .shopping-cart-total-items {
-    font-size: 1rem;
-    margin-top: auto;
   }
 
   .cart-sidebar-container {
@@ -133,6 +66,10 @@
 
   .cart-card-title {
     margin: auto 0;
+  }
+
+  .cart-card-price {
+    color: #9A9A9A;
   }
 
   .disable-div {
